@@ -1,0 +1,5 @@
+openstack:
+  repo:
+    packages: []
+    url_prefix: ''
+    url: ''

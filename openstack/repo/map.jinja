@@ -1,0 +1,13 @@
+{% import_yaml "openstack/repo/defaults.yaml" as default_settings %}
+
+{% set distro_map = salt['grains.filter_by']({
+    'Debian': { 'packages': [ 'ubuntu-cloud-keyring', ],
+                'url_prefix': 'http://ubuntu-cloud.archive.canonical.com/ubuntu', },
+    'RedHat': { 'packages': [ 'yum-plugin-priorities', ],
+                'url_prefix': 'http://repos.fedorapeople.org/repos/openstack', },
+    'Suse':   { 'url_prefix': 'obs://Cloud:OpenStack', },
+  }) %}
+
+{% do default_settings.openstack.repo.update(distro_map) %}
+
+{% set openstack_repo_settings = salt['pillar.get']('openstack:repo', default=default_settings.openstack.repo, merge=True) %}
