@@ -1,0 +1,4 @@
+{%- from "openstack/keystone/map.jinja" import keystone_settings with context -%}
+{% for key, value in keystone_settings.default_catalog_templates|dictsort -%}
+{{ key }} = {{ value }}
+{% endfor -%}

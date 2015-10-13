@@ -1,0 +1,2 @@
+{%- from "openstack/keystone/map.jinja" import keystone_settings with context -%}
+{{ keystone_settings.policy|json }}
