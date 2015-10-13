@@ -1,0 +1,67 @@
+## fill in the blanks
+{% set mysql_rootpw = '' %}
+{% set rabbit_pass = '' %}
+{% set keystone_dbpass = '' %}
+{% set keystone_token = '' %}
+{% set demo_pass = '' %}
+{% set admin_pass = '' %}
+{% set glance_dbpass = '' %}
+{% set glance_pass = '' %}
+{% set nova_dbpass = '' %}
+{% set nova_pass = '' %}
+{% set dash_dbpass = '' %}
+{% set cinder_dbpass = '' %}
+{% set cinder_pass = '' %}
+{% set neutron_dbpass = '' %}
+{% set neutron_pass = '' %}
+{% set heat_dbpass = '' %}
+{% set head_pass = '' %}
+{% set ceilometer_dbpass = '' %}
+{% set ceilometer_pass = '' %}
+{% set trove_dbpass = '' %}
+{% set trove_pass = '' %}
+
+## salt.modules.openstack profile
+devstack:
+  keystone.token: {{ keystone_token|yaml }}
+  keystone.endpoint: 'http://127.0.0.1:35357/v2.0'
+
+## database settings for mysql-formula
+mysql:
+  server:
+    root_password: {{ mysql_rootpw|yaml }}
+    mysqld:
+      bind-address: 127.0.0.1
+      default-storage-engine: innodb
+      innodb_file_per_table: noarg_present
+      collation-server: utf8_general_ci
+      init-connect: 'SET NAMES utf8'
+      character-set-server: utf8
+  database:
+    - keystone
+  user:
+    keystone:
+      password: {{ keystone_dbpass|yaml }}
+      host: localhost           # this is required
+      databases:
+        - database: keystone
+          grants: ['all privileges']
+
+## broker settings for rabbit-formula
+rabbitmq:
+  user:
+    devstack:
+      - password: {{ rabbit_pass|yaml }}
+
+## all-in-one OpenStack deployment
+openstack:
+  keystone:
+    DEFAULT:
+      admin_token: {{ keystone_token }}
+    database:
+      connection: mysql://keystone:{{ keystone_dbpass|yaml }}@localhost/keystone
+    token:
+      provider: keystone.token.providers.uuid.Provider
+      driver: keystone.token.persistence.backends.sql.Token
+    revoke:
+      driver: keystone.contrib.revoke.backends.sql.Revoke
