@@ -23,13 +23,13 @@
 
 ## salt.modules.openstack profile
 devstack:
-  keystone.token: {{ keystone_token|yaml }}
+  keystone.token: {{ keystone_token|yaml_encode }}
   keystone.endpoint: 'http://127.0.0.1:35357/v2.0'
 
 ## database settings for mysql-formula
 mysql:
   server:
-    root_password: {{ mysql_rootpw|yaml }}
+    root_password: {{ mysql_rootpw|yaml_encode }}
     mysqld:
       bind-address: 127.0.0.1
       default-storage-engine: innodb
@@ -41,7 +41,7 @@ mysql:
     - keystone
   user:
     keystone:
-      password: {{ keystone_dbpass|yaml }}
+      password: {{ keystone_dbpass|yaml_encode }}
       host: localhost           # this is required
       databases:
         - database: keystone
@@ -51,15 +51,15 @@ mysql:
 rabbitmq:
   user:
     devstack:
-      - password: {{ rabbit_pass|yaml }}
+      - password: {{ rabbit_pass|yaml_encode }}
 
 ## all-in-one OpenStack deployment
 openstack:
   keystone:
     DEFAULT:
-      admin_token: {{ keystone_token }}
+      admin_token: {{ keystone_token|yaml_encode }}
     database:
-      connection: mysql://keystone:{{ keystone_dbpass|yaml }}@localhost/keystone
+      connection: {{ 'mysql://keystone:%s@localhost/keystone'|format(keystone_dbpass)|yaml_encode }}
     token:
       provider: keystone.token.providers.uuid.Provider
       driver: keystone.token.persistence.backends.sql.Token
