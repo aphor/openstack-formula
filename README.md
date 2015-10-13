@@ -39,7 +39,10 @@ open-source cloud computing software platform.
   Activates the OpenStack-specific package repositories on SUSE
   Enterprise Linux, Red Hat Enterprise Linux, or Ubuntu.
 
-TODO
+* **openstack.keystone**
+
+  Installs and configures the OpenStack Identity service, including
+  tenants, users, roles, and the service entity and API endpoint.
 
 ## Configuration
 
