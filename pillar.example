@@ -109,6 +109,10 @@ openstack:
         password: 'verybasspad'
         email: demo@example.com
         tenant: demo            # should be added to _member_ automatically
+    service_catalog:
+      - name: keystone
+        service_type: identity
+        description: OpenStack Identity
 
 ### Local Variables:
 ### mode: yaml
