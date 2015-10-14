@@ -101,3 +101,25 @@ openstack_keystone:
     - require:
         - service: openstack_keystone
 {% endfor %}
+
+{% for role in keystone_settings.roles %}
+{{ 'openstack_keystone_role_%s'|format(role.name if role is mapping else role)|yaml_encode }}:
+  keystone.role_present:
+  {% if role is mapping %}
+    - name: {{ role.name|yaml_encode }}
+    {% for connection_arg in keystone_connection_args if role[connection_arg] is defined %}
+    - {{ connection_arg|yaml_encode }}: {{ role[connection_arg]|yaml_encode }}
+    {% else %}
+      {% if role.profile is defined %}
+    - profile: {{ role.profile|yaml_encode }}
+      {% elif keystone_settings.profile %}
+    - profile: {{ keystone_settings.profile }}
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    - name: {{ role|yaml_encode }}
+    {% if keystone_settings.profile %}
+    - profile: {{ keystone_settings.profile }}
+    {% endif %}
+  {% endif %}
+{% endfor %}

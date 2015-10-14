@@ -18,6 +18,8 @@ openstack:
     profile: ''
     tenants:
       []
+    roles:
+      []
 
     ## OpenStack Keystone service configuration (keystone.conf); keep
     ## this in sync with the keystone.conf section list, and don't
