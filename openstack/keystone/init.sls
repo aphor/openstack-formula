@@ -123,3 +123,29 @@ openstack_keystone:
     {% endif %}
   {% endif %}
 {% endfor %}
+
+{% for user in keystone_settings.users %}
+{{ 'openstack_keystone_user_%s'|format(user.name)|yaml_encode }}:
+  keystone.user_present:
+    - name: {{ user.name|yaml_encode }}
+    - password: {{ user.password|yaml_encode }}
+    - email: {{ user.email|yaml_encode }}
+    {% if user.tenant is defined %}
+    - tenant: {{ user.tenant|yaml_encode }}
+    {% endif %}
+    {% if user.enabled is defined %}
+    - enabled: {{ True if user.enabled else False }}
+    {% endif %}
+    {% if user.roles is defined and user.roles is mapping %}
+    - roles: {{ user.roles|yaml }}
+    {% endif %}
+    {% for connection_arg in keystone_connection_args if user[connection_arg] is defined %}
+    - {{ connection_arg|yaml_encode }}: {{ user[connection_arg]|yaml_encode }}
+    {% else %}
+      {% if user.profile is defined %}
+    - profile: {{ user.profile|yaml_encode }}
+      {% elif keystone_settings.profile %}
+    - profile: {{ keystone_settings.profile }}
+      {% endif %}
+    {% endfor %}
+{% endfor %}
