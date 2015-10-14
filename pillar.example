@@ -91,11 +91,11 @@ openstack:
         keystone.auth_url: 'http://127.0.0.1:5000/v2.0/'
     roles:
       ## short version
-      - admin
+      - _member_                # required if adding roles!
       ## long version, as above
-      # - name: admin
-      #   keystone.token: {{ keystone_token|yaml_encode }}
-      #   keystone.endpoint: 'http://127.0.0.1:35357/v2.0'
+      - name: admin
+        keystone.token: {{ keystone_token|yaml_encode }}
+        keystone.endpoint: 'http://127.0.0.1:35357/v2.0'
     users:
       - name: admin
         password: 'verybadpass'
