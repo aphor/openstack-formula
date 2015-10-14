@@ -6,7 +6,7 @@ openstack_keystone:
     - pkgs: {{ keystone_settings.packages|yaml }}
 
   group.present:
-    - name: keystone
+    - name: {{ keystone_settings.group }}
     - system: True
     - require:
         - pkg: openstack_keystone
@@ -15,7 +15,7 @@ openstack_keystone:
     - name: {{ keystone_settings.user }}
     - system: True
     - gid: {{ keystone_settings.group }}
-    - home: 
+    - home: {{ keystone_settings.home_directory }}
     - password: '*'
     - shell: /bin/false
     - require:
@@ -56,7 +56,7 @@ openstack_keystone:
 
   cron.present:
     - name: chronic keystone-manage token_flush
-    - user: keystone
+    - user: {{ keystone_settings.user }}
     - minute: random
     - require:
         - user: openstack_keystone
