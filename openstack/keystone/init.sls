@@ -61,3 +61,43 @@ openstack_keystone:
     - require:
         - user: openstack_keystone
         - service: openstack_keystone
+
+{% set keystone_connection_args = [
+    'keystone.user',
+    'keystone.password',
+    'keystone.tenant',
+    'keystone.tenant_id',
+    'keystone.auth_url',
+    'keystone.token',
+    'keystone.endpoint',
+  ] %}
+
+{% for tenant in keystone_settings.tenants %}
+{{ 'openstack_keystone_tenant_%s'|format(tenant.name if tenant is mapping else tenant)|yaml_encode }}:
+  keystone.tenant_present:
+  {% if tenant is mapping %}
+    - name: {{ tenant.name|yaml_encode }}
+    {% if tenant.description is defined %}
+    - description: {{ tenant.description|yaml_encode }}
+    {% endif %}
+    {% if tenant.enabled is defined %}
+    - enabled: {{ True if tenant.enabled else False }}
+    {% endif %}
+    {% for connection_arg in keystone_connection_args if tenant[connection_arg] is defined %}
+    - {{ connection_arg|yaml_encode }}: {{ tenant[connection_arg]|yaml_encode }}
+    {% else %}
+      {% if tenant.profile is defined %}
+    - profile: {{ tenant.profile|yaml_encode }}
+      {% elif keystone_settings.profile %}
+    - profile: {{ keystone_settings.profile }}
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    - name: {{ tenant|yaml_encode }}
+    {% if keystone_settings.profile %}
+    - profile: {{ keystone_settings.profile }}
+    {% endif %}
+  {% endif %}
+    - require:
+        - service: openstack_keystone
+{% endfor %}

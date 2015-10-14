@@ -15,6 +15,10 @@ openstack:
     services:
       - openstack-keystone
 
+    profile: ''
+    tenants:
+      []
+
     ## OpenStack Keystone service configuration (keystone.conf); keep
     ## this in sync with the keystone.conf section list, and don't
     ## forget to set openstack:keystone:DEFAULT:admin_token at the
