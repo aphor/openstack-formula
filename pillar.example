@@ -1,3 +1,5 @@
+#### PILLAR.EXAMPLE --- Sample Pillar configuration for openstack-formula
+
 ## fill in the blanks
 {% set mysql_rootpw = '' %}
 {% set rabbit_pass = '' %}
@@ -82,3 +84,9 @@ openstack:
         keystone.tenant: admin
         keystone.tenant_id: f80919baedab48ec8931f200c65a50df
         keystone.auth_url: 'http://127.0.0.1:5000/v2.0/'
+
+### Local Variables:
+### mode: yaml
+### End:
+
+#### PILLAR.EXAMPLE ends here.
