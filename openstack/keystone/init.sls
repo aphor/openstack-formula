@@ -171,3 +171,22 @@ openstack_keystone:
         - keystone: {{ 'openstack_keystone_role_%s'|format(role)|yaml_encode }}
     {% endfor %}
 {% endfor %}
+
+{% for service in keystone_settings.service_catalog %}
+{{ 'openstack_keystone_service_%s'|format(service.name)|yaml_encode }}:
+  keystone.service_present:
+    - name: {{ service.name|yaml_encode }}
+    - service_type: {{ service.service_type|yaml_encode }}
+  {% if service.description is defined %}
+    - description: {{ service.description|yaml_encode }}
+  {% endif %}
+  {% for connection_arg in keystone_connection_args if service[connection_arg] is defined %}
+    - {{ connection_arg|yaml_encode }}: {{ service[connection_arg]|yaml_encode }}
+  {% else %}
+    {% if service.profile is defined %}
+    - profile: {{ service.profile|yaml_encode }}
+    {% elif keystone_settings.profile %}
+    - profile: {{ keystone_settings.profile }}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
