@@ -22,6 +22,7 @@
 {% set trove_pass = '' %}
 
 ## salt.modules.openstack profile
+## (https://docs.saltstack.com/en/latest/ref/modules/all/salt.modules.keystone.html)
 devstack:
   keystone.token: {{ keystone_token|yaml_encode }}
   keystone.endpoint: 'http://127.0.0.1:35357/v2.0'
@@ -65,3 +66,19 @@ openstack:
       driver: keystone.token.persistence.backends.sql.Token
     revoke:
       driver: keystone.contrib.revoke.backends.sql.Revoke
+
+    profile: devstack
+    tenants:
+      - admin                   # uses the devstack profile to provision
+      - name: example           # if no profile specified, uses minion settings
+        description: Example Tenant
+      - name: anon
+        description: A Longer Example
+        keystone.token: {{ keystone_token|yaml_encode }}
+        keystone.endpoint: 'http://127.0.0.1:35357/v2.0'
+      - name: foobar
+        keystone.user: admin
+        keystone.password: verybadpass
+        keystone.tenant: admin
+        keystone.tenant_id: f80919baedab48ec8931f200c65a50df
+        keystone.auth_url: 'http://127.0.0.1:5000/v2.0/'
