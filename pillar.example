@@ -69,21 +69,46 @@ openstack:
     revoke:
       driver: keystone.contrib.revoke.backends.sql.Revoke
 
+    ## use the connection profile specified in the `devstack` pillar;
+    ## if not specified and if no connection args provided inline,
+    ## will use the salt-minion configuration
     profile: devstack
     tenants:
-      - admin                   # uses the devstack profile to provision
-      - name: example           # if no profile specified, uses minion settings
-        description: Example Tenant
-      - name: anon
-        description: A Longer Example
+      - admin                   # short version, name only
+      - name: demo              # long version, arguments to keystone.tenant_present
+        description: Demo Tenant
+        ## specify connection args inline, overrides Pillar or
+        ## salt-minion connection args
         keystone.token: {{ keystone_token|yaml_encode }}
         keystone.endpoint: 'http://127.0.0.1:35357/v2.0'
-      - name: foobar
+      - name: service
+        description: Service Tenant
+        ## alternative connection args
         keystone.user: admin
         keystone.password: verybadpass
         keystone.tenant: admin
         keystone.tenant_id: f80919baedab48ec8931f200c65a50df
         keystone.auth_url: 'http://127.0.0.1:5000/v2.0/'
+    roles:
+      ## short version
+      - admin
+      ## long version, as above
+      # - name: admin
+      #   keystone.token: {{ keystone_token|yaml_encode }}
+      #   keystone.endpoint: 'http://127.0.0.1:35357/v2.0'
+    users:
+      - name: admin
+        password: 'verybadpass'
+        email: admin@example.com
+        tenant: admin
+        roles:                  # optional; see keystone.user_present
+          admin:                # tenant
+            - admin             # role
+            - _member_          # must be specified?
+      - name: demo
+        password: 'verybasspad'
+        email: demo@example.com
+        tenant: demo            # should be added to _member_ automatically
 
 ### Local Variables:
 ### mode: yaml
