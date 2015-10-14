@@ -190,3 +190,30 @@ openstack_keystone:
     {% endif %}
   {% endfor %}
 {% endfor %}
+
+{% for endpoint in keystone_settings.endpoints %}
+{{ 'openstack_keystone_endpoint_%s'|format(endpoint.name)|yaml_encode }}:
+  keystone.endpoint_present:
+    - name: {{ endpoint.name|yaml_encode }}
+  {% if endpoint.publicurl is defined %}
+    - publicurl: {{ endpoint.publicurl|yaml_encode }}
+  {% endif %}
+  {% if endpoint.internalurl is defined %}
+    - internalurl: {{ endpoint.internalurl|yaml_encode }}
+  {% endif %}
+  {% if endpoint.adminurl is defined %}
+    - adminurl: {{ endpoint.adminurl|yaml_encode }}
+  {% endif %}
+  {% if endpoint.region is defined %}
+    - region: {{ endpoint.region|yaml_encode }}
+  {% endif %}
+  {% for connection_arg in keystone_connection_args if endpoint[connection_arg] is defined %}
+    - {{ connection_arg|yaml_encode }}: {{ endpoint[connection_arg]|yaml_encode }}
+  {% else %}
+    {% if endpoint.profile is defined %}
+    - profile: {{ endpoint.profile|yaml_encode }}
+    {% elif keystone_settings.profile %}
+    - profile: {{ keystone_settings.profile }}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
