@@ -1,0 +1,13 @@
+{% import_yaml "openstack/release.jinja" as openstack_release %}
+{% import_yaml "openstack/glance/defaults.yaml" as default_settings %}
+
+{% set distro_map = salt['grains.filter_by']({
+    'Debian': { 'packages': [ 'glance', 'python-glanceclient', ],
+                'services': [ 'glance-api', 'glance-registry', ], },
+    'RedHat': {},
+    'Suse':   {},
+  }) %}
+
+{% do default_settings.openstack.glance.update(distro_map) %}
+
+{% set glance_settings = salt['pillar.get']('openstack:glance', default=default_settings.openstack.glance, merge=True) %}

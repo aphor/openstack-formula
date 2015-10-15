@@ -1,0 +1,2 @@
+{%- from "openstack/glance/map.jinja" import glance_settings with context -%}
+{{ glance_settings.policy|json }}
