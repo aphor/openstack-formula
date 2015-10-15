@@ -150,6 +150,7 @@ openstack:
       verbose: True
     api_database:
       connection: {{ 'mysql://glance:%s@localhost/glance'|format(glance_dbpass)|yaml_encode }}
+      sqlite_db: ~              # remove the sqlite database setting
     api_keystone_authtoken:
       auth_uri: http://controller:5000/v2.0
       identity_uri: http://controller:35357
@@ -166,6 +167,7 @@ openstack:
       verbose: True
     registry_database:
       connection: {{ 'mysql://glance:%s@localhost/glance'|format(glance_dbpass)|yaml_encode }}
+      sqlite_db: ~
     registry_keystone_authtoken:
       auth_uri: http://controller:5000/v2.0
       identity_uri: http://controller:35357
