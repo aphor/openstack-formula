@@ -41,8 +41,16 @@ open-source cloud computing software platform.
 
 * **openstack.keystone**
 
-  Installs and configures the OpenStack Identity service, including
-  tenants, users, roles, and the service entity and API endpoint.
+  Installs and configures the OpenStack Identity service; provisions
+  tenants, roles, and users; and registers other OpenStack services
+  and their API endpoints in the service catalog.
+
+* **openstack.glance**
+
+  Installs and configures the OpenStack Image service, including the
+  API endpoint and store drivers.
+
+TODO
 
 ## Configuration
 
