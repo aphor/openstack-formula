@@ -42,12 +42,19 @@ mysql:
       character-set-server: utf8
   database:
     - keystone
+    - glance
   user:
     keystone:
       password: {{ keystone_dbpass|yaml_encode }}
       host: localhost           # this is required
       databases:
         - database: keystone
+          grants: ['all privileges']
+    glance:
+      password: {{ glance_dbpass|yaml_encode }}
+      host: localhost           # this is required
+      databases:
+        - database: glance
           grants: ['all privileges']
 
 ## broker settings for rabbit-formula
@@ -109,16 +116,64 @@ openstack:
         password: 'verybasspad'
         email: demo@example.com
         tenant: demo            # should be added to _member_ automatically
+      - name: glance
+        password: {{ glance_pass|yaml_encode }}
+        email: ''
+        tenant: service
+        role:
+          - service:
+              - admin
+              - _member_        # must be specified?
     service_catalog:
       - name: keystone
         service_type: identity
         description: OpenStack Identity
+      - name: glance
+        service_type: image
+        description: OpenStack Image Service
     endpoints:
       - name: keystone
         publicurl: http://controller:5000/v2.0
         internalurl: http://controller:5000/v2.0
         adminurl: http://controller:35357/v2.0
         region: regionOne
+      - name: glance
+        publicurl: http://controller:9292
+        internalurl: http://controller:9292
+        adminurl: http://controller:9292
+        region: regionOne
+
+  glance:
+    api_DEFAULT:
+      rabbit_password: {{ rabbit_pass|yaml_encode }}
+      notification_driver: noop
+      verbose: True
+    api_database:
+      connection: {{ 'mysql://glance:%s@localhost/glance'|format(glance_dbpass)|yaml_encode }}
+    api_keystone_authtoken:
+      auth_uri: http://controller:5000/v2.0
+      identity_uri: http://controller:35357
+      admin_tenant_name: service
+      admin_user: glance
+      admin_password: {{ glance_pass|yaml_encode }}
+      revocation_cache_time: 10
+    api_paste_deploy:
+      flavor: keystone
+
+    registry_DEFAULT:
+      rabbit_password: {{ rabbit_pass|yaml_encode }}
+      notification_driver: noop
+      verbose: True
+    registry_database:
+      connection: {{ 'mysql://glance:%s@localhost/glance'|format(glance_dbpass)|yaml_encode }}
+    registry_keystone_authtoken:
+      auth_uri: http://controller:5000/v2.0
+      identity_uri: http://controller:35357
+      admin_tenant_name: service
+      admin_user: glance
+      admin_password: {{ glance_pass|yaml_encode }}
+    registry_paste_deploy:
+      flavor: keystone
 
 ### Local Variables:
 ### mode: yaml
