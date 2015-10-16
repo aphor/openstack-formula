@@ -1,6 +1,8 @@
 #### PILLAR.EXAMPLE --- Sample Pillar configuration for openstack-formula
 
 ## fill in the blanks
+{% set controller = '' %}       # hostname or FQDN of the controller node
+{% set controller_ipv4 = '' %}  # management interface IP address of the controller node
 {% set mysql_rootpw = '' %}
 {% set rabbit_pass = '' %}
 {% set keystone_dbpass = '' %}
@@ -133,14 +135,14 @@ openstack:
         description: OpenStack Image Service
     endpoints:
       - name: keystone
-        publicurl: http://controller:5000/v2.0
-        internalurl: http://controller:5000/v2.0
-        adminurl: http://controller:35357/v2.0
+        publicurl: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
+        internalurl: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
+        adminurl: {{ 'http://%s:35357/v2.0'|format(controller)|yaml_encode }}
         region: regionOne
       - name: glance
-        publicurl: http://controller:9292
-        internalurl: http://controller:9292
-        adminurl: http://controller:9292
+        publicurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
+        internalurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
+        adminurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
         region: regionOne
 
   glance:
@@ -152,8 +154,8 @@ openstack:
       connection: {{ 'mysql://glance:%s@localhost/glance'|format(glance_dbpass)|yaml_encode }}
       sqlite_db: ~              # remove the sqlite database setting
     api_keystone_authtoken:
-      auth_uri: http://controller:5000/v2.0
-      identity_uri: http://controller:35357
+      auth_uri: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
+      identity_uri: {{ 'http://%s:35357'|format(controller)|yaml_encode }}
       admin_tenant_name: service
       admin_user: glance
       admin_password: {{ glance_pass|yaml_encode }}
@@ -169,8 +171,8 @@ openstack:
       connection: {{ 'mysql://glance:%s@localhost/glance'|format(glance_dbpass)|yaml_encode }}
       sqlite_db: ~
     registry_keystone_authtoken:
-      auth_uri: http://controller:5000/v2.0
-      identity_uri: http://controller:35357
+      auth_uri: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
+      identity_uri: {{ 'http://%s:35357'|format(controller)|yaml_encode }}
       admin_tenant_name: service
       admin_user: glance
       admin_password: {{ glance_pass|yaml_encode }}
