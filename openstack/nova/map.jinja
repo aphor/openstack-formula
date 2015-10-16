@@ -1,0 +1,17 @@
+{% import_yaml "openstack/release.jinja" as openstack_release %}
+{% import_yaml "openstack/nova/defaults.yaml" as default_settings %}
+
+{% set distro_map = salt['grains.filter_by']({
+    'Debian': { 'packages': [ 'nova-api', 'nova-cert', 'nova-conductor',
+                              'nova-consoleauth', 'nova-novncproxy',
+                              'nova-scheduler', 'python-novaclient', ],
+                'services': [ 'nova-api', 'nova-cert', 'nova-consoleauth',
+                              'nova-scheduler', 'nova-conductor',
+                              'nova-novncproxy', ], },
+    'RedHat': {},
+    'Suse':   {},
+  }) %}
+
+{% do default_settings.openstack.nova.update(distro_map) %}
+
+{% set nova_settings = salt['pillar.get']('openstack:nova', default=default_settings.openstack.nova, merge=True) %}
