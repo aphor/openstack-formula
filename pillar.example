@@ -163,9 +163,9 @@ openstack:
         adminurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
         region: regionOne
       - name: nova
-        publicurl: {{ 'http://%s:8774/v2/%(tenant_id)s'|format(controller)|yaml_encode }}
-        internalurl: {{ 'http://%s:8774/v2/%(tenant_id)s'|format(controller)|yaml_encode }}
-        adminurl: {{ 'http://%s:8774/v2/%(tenant_id)s'|format(controller)|yaml_encode }}
+        publicurl: {{ 'http://%s:8774/v2/%%(tenant_id)s'|format(controller)|yaml_encode }}
+        internalurl: {{ 'http://%s:8774/v2/%%(tenant_id)s'|format(controller)|yaml_encode }}
+        adminurl: {{ 'http://%s:8774/v2/%%(tenant_id)s'|format(controller)|yaml_encode }}
         region: regionOne
 
   glance:
