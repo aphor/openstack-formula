@@ -45,6 +45,7 @@ mysql:
   database:
     - keystone
     - glance
+    - nova
   user:
     keystone:
       password: {{ keystone_dbpass|yaml_encode }}
@@ -57,6 +58,12 @@ mysql:
       host: localhost           # this is required
       databases:
         - database: glance
+          grants: ['all privileges']
+    nova:
+      password: {{ nova_dbpass|yaml_encode }}
+      host: localhost
+      databases:
+        - database: nova
           grants: ['all privileges']
 
 ## broker settings for rabbit-formula
@@ -126,6 +133,14 @@ openstack:
           - service:
               - admin
               - _member_        # must be specified?
+      - name: nova
+        password: {{ nova_pass|yaml_encode }}
+        email: ''
+        tenant: service
+        role:
+          - service:
+              - admin
+              - _member_        # must be specified?
     service_catalog:
       - name: keystone
         service_type: identity
@@ -133,6 +148,9 @@ openstack:
       - name: glance
         service_type: image
         description: OpenStack Image Service
+      - name: nova
+        service_type: compute
+        description: OpenStack Compute
     endpoints:
       - name: keystone
         publicurl: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
@@ -143,6 +161,11 @@ openstack:
         publicurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
         internalurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
         adminurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
+        region: regionOne
+      - name: nova
+        publicurl: {{ 'http://%s:8774/v2/%(tenant_id)s'|format(controller)|yaml_encode }}
+        internalurl: {{ 'http://%s:8774/v2/%(tenant_id)s'|format(controller)|yaml_encode }}
+        adminurl: {{ 'http://%s:8774/v2/%(tenant_id)s'|format(controller)|yaml_encode }}
         region: regionOne
 
   glance:
@@ -178,6 +201,27 @@ openstack:
       admin_password: {{ glance_pass|yaml_encode }}
     registry_paste_deploy:
       flavor: keystone
+
+  nova:
+    DEFAULT:
+      rpc_backend: rabbit
+      rabbit_host: localhost
+      rabbit_password: {{ rabbit_pass|yaml_encode }}
+      auth_strategy: keystone
+      my_ip: {{ controller_ipv4|yaml_encode }}
+      vncserver_listen: {{ controller_ipv4|yaml_encode }}
+      vncserver_proxyclient_address: {{ controller_ipv4|yaml_encode }}
+      verbose: True
+    database:
+      connection: {{ 'mysql://nova:%s@localhost/nova'|format(nova_dbpass)|yaml_encode }}
+    keystone_authtoken:
+      auth_uri: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
+      identity_uri: {{ 'http://%s:35357'|format(controller)|yaml_encode }}
+      admin_tenant_name: service
+      admin_user: nova
+      admin_password: {{ nova_pass|yaml_encode }}
+    glance:
+      host: {{ controller|yaml_encode }}
 
 ### Local Variables:
 ### mode: yaml
