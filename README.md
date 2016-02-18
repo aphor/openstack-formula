@@ -1,26 +1,25 @@
 # openstack-formula
 
-This Salt state formula installs and configures OpenStack, a free and
-open-source cloud computing software platform.
+This Salt state formula installs and configures
+[OpenStack](http://openstack.org/), a free and open-source cloud
+computing software platform.
 
 ## Required Formulas
 
 * [epel-formula](https://github.com/saltstack-formulas/epel-formula)
 
-  Several parts of this formula rely on packages found the
+  When deploying OpenStack on computers running Red Hat Enterprise
+  Linux or a related distribution, the
   [Extra Packages for Enterprise Linux](https://fedoraproject.org/wiki/EPEL)
-  (EPEL) repository.  When deploying OpenStack on computers running
-  Red Hat Enterprise Linux or a related distribution, make sure to
-  also enable the EPEL repository.
+  (EPEL) repository must be enabled.
 
 * [mysql-formula](https://github.com/saltstack-formulas/mysql-formula)
   or
   [postgres-formula](https://github.com/saltstack-formulas/postgres-formula)
 
   OpenStack uses a SQL database to store configuration data or other
-  information about its services.  Typically, one installs this
-  database on the controller node.  OpenStack supports both MySQL and
-  PostgreSQL.
+  information about its services.  Typically, the controller node
+  hosts this database.  OpenStack supports both MySQL and PostgreSQL.
 
 * [rabbitmq-formula](https://github.com/saltstack-formulas/rabbitmq-formula)
 
@@ -50,7 +49,21 @@ open-source cloud computing software platform.
   Installs and configures the OpenStack Image service, including the
   API endpoint and store drivers.
 
-TODO
+* **openstack.nova.controller**
+
+  Deploys an OpenStack Compute controller node.
+
+* **openstack.nova.compute**
+
+  Deploys an OpenStack Compute hypervisor node.
+
+* **openstack.nova.network**
+
+* **openstack.nova**
+
+  Installs and configures both the OpenStack Compute controller and
+  hypervisor services on the same node, in that order (not recommended
+  for use in production environments).
 
 ## Configuration
 
