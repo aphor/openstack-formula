@@ -65,6 +65,12 @@ computing software platform.
   hypervisor services on the same node, in that order (not recommended
   for use in production environments).
 
+### Removing OpenStack
+
+Each state listed above has a cooresponding `.absent` state that
+undoes the corresponding set of changes.  For example, to remove the
+OpenStack Identity service, use the `openstack.keystone.absent` state.
+
 ## Configuration
 
 TODO
