@@ -15,6 +15,9 @@ openstack:
     services:
       - openstack-keystone
 
+    purge:
+      False
+
     profile: ''
     tenants:
       []
