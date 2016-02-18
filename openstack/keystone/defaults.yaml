@@ -33,115 +33,78 @@ openstack:
     ## very least
     DEFAULT:
       {}
-
     assignment:
       {}
-
     auth:
       {}
-
     cache:
       {}
-
     catalog:
       {}
-
     credential:
       {}
-
     database:
       connection: sqlite:////var/lib/keystone/keystone.db
-
     domain_config:
       {}
-
     endpoint_filter:
       {}
-
     endpoint_policy:
       {}
-
     eventlet_server:
       {}
-
     eventlet_server_ssl:
       {}
-
     federation:
       {}
-
     fernet_tokens:
       {}
-
     identity:
       {}
-
     identity_mapping:
       {}
-
     kvs:
       {}
-
     ldap:
       {}
-
     matchmaker_redis:
       {}
-
     matchmaker_ring:
       {}
-
     memcache:
       {}
-
     oauth1:
       {}
-
     os_inherit:
       {}
-
     oslo_messaging_amqp:
       {}
-
     oslo_messaging_qpid:
       {}
-
     oslo_messaging_rabbit:
       {}
-
     oslo_middleware:
       {}
-
     oslo_policy:
       {}
-
     paste_deploy:
       {}
-
     resource:
       {}
-
     revoke:
       {}
-
     role:
       {}
-
     saml:
       {}
-
     signing:
       {}
-
     ssl:
       {}
-
     token:
       {}
-
     trust:
       {}
-
     extra_headers:
       {}
 
@@ -359,44 +322,35 @@ openstack:
     ## OpenStack Keystone logging settings
     loggers:
       - root
-
     formatters:
       - normal
       - normal_with_name
       - debug
-
     handlers:
       - production
       - file
       - devel
-
     logger_root:
       level: WARNING
       handlers: file
-
     handler_production:
       class: handlers.SysLogHandler
       level: ERROR
       formatter: normal_with_name
       args: "(('localhost', handlers.SYSLOG_UDP_PORT), handlers.SysLogHandler.LOG_USER)"
-
     handler_file:
       class: FileHandler
       level: DEBUG
       formatter: normal_with_name
       args: "('/var/log/keystone/keystone.log', 'a')"
-
     handler_devel:
       class: StreamHandler
       level: NOTSET
       formatter: debug
       args: "(sys.stdout,)"
-
     formatter_normal:
       format: "%(asctime)s %(levelname)s %(message)s"
-
     formatter_normal_with_name:
       format: "(%(name)s): %(asctime)s %(levelname)s %(message)s"
-
     formatter_debug:
       format: "(%(name)s): %(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s"
