@@ -74,7 +74,10 @@ rabbitmq:
 
 ## all-in-one OpenStack deployment
 openstack:
+  release: juno
+
   keystone:
+    ## keystone.conf settings
     DEFAULT:
       admin_token: {{ keystone_token|yaml_encode }}
     database:
