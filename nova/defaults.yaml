@@ -1,0 +1,15 @@
+nova:
+  packages:
+    - openstack-nova-compute
+    - sysfsutils
+  group:
+    nova
+  user:
+    nova
+  home_directory:
+    /var/lib/nova
+  config_directory:
+    /etc/nova
+  services:
+    - openstack-nova-compute
+    - libvirtd

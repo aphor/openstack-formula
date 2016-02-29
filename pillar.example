@@ -72,160 +72,160 @@ rabbitmq:
     devstack:
       - password: {{ rabbit_pass|yaml_encode }}
 
-## all-in-one OpenStack deployment
+## pick a release
 openstack:
   release: juno
 
-  keystone:
-    ## keystone.conf settings
+keystone:
+  ## keystone.conf settings
+  DEFAULT:
+    admin_token: {{ keystone_token|yaml_encode }}
+  database:
+    connection: {{ 'mysql://keystone:%s@localhost/keystone'|format(keystone_dbpass)|yaml_encode }}
+  token:
+    provider: keystone.token.providers.uuid.Provider
+    driver: keystone.token.persistence.backends.sql.Token
+  revoke:
+    driver: keystone.contrib.revoke.backends.sql.Revoke
+
+  ## use the connection profile specified in the `devstack` pillar;
+  ## if not specified and if no connection args provided inline,
+  ## will use the salt-minion configuration
+  profile: devstack
+  tenants:
+    - admin                   # short version, name only
+    - name: demo              # long version, arguments to keystone.tenant_present
+      description: Demo Tenant
+      ## specify connection args inline, overrides Pillar or
+      ## salt-minion connection args
+      keystone.token: {{ keystone_token|yaml_encode }}
+      keystone.endpoint: 'http://127.0.0.1:35357/v2.0'
+    - name: service
+      description: Service Tenant
+      ## alternative connection args
+      keystone.user: admin
+      keystone.password: verybadpass
+      keystone.tenant: admin
+      keystone.tenant_id: f80919baedab48ec8931f200c65a50df
+      keystone.auth_url: 'http://127.0.0.1:5000/v2.0/'
+  roles:
+    ## short version
+    - _member_                # required if adding roles!
+    ## long version, as above
+    - name: admin
+      keystone.token: {{ keystone_token|yaml_encode }}
+      keystone.endpoint: 'http://127.0.0.1:35357/v2.0'
+  users:
+    - name: admin
+      password: 'verybadpass'
+      email: admin@example.com
+      tenant: admin
+      roles:                  # optional; see keystone.user_present
+        admin:                # tenant
+          - admin             # role
+          - _member_          # must be specified?
+    - name: demo
+      password: 'verybasspad'
+      email: demo@example.com
+      tenant: demo            # should be added to _member_ automatically
+    - name: glance
+      password: {{ glance_pass|yaml_encode }}
+      email: ''
+      tenant: service
+      role:
+        - service:
+            - admin
+            - _member_        # must be specified?
+    - name: nova
+      password: {{ nova_pass|yaml_encode }}
+      email: ''
+      tenant: service
+      role:
+        - service:
+            - admin
+            - _member_        # must be specified?
+  service_catalog:
+    - name: keystone
+      service_type: identity
+      description: OpenStack Identity
+    - name: glance
+      service_type: image
+      description: OpenStack Image Service
+    - name: nova
+      service_type: compute
+      description: OpenStack Compute
+  endpoints:
+    - name: keystone
+      publicurl: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
+      internalurl: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
+      adminurl: {{ 'http://%s:35357/v2.0'|format(controller)|yaml_encode }}
+      region: regionOne
+    - name: glance
+      publicurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
+      internalurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
+      adminurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
+      region: regionOne
+    - name: nova
+      publicurl: {{ 'http://%s:8774/v2/%%(tenant_id)s'|format(controller)|yaml_encode }}
+      internalurl: {{ 'http://%s:8774/v2/%%(tenant_id)s'|format(controller)|yaml_encode }}
+      adminurl: {{ 'http://%s:8774/v2/%%(tenant_id)s'|format(controller)|yaml_encode }}
+      region: regionOne
+
+glance:
+  api_DEFAULT:
+    rabbit_password: {{ rabbit_pass|yaml_encode }}
+    notification_driver: noop
+    verbose: True
+  api_database:
+    connection: {{ 'mysql://glance:%s@localhost/glance'|format(glance_dbpass)|yaml_encode }}
+    sqlite_db: ~              # remove the sqlite database setting
+  api_keystone_authtoken:
+    auth_uri: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
+    identity_uri: {{ 'http://%s:35357'|format(controller)|yaml_encode }}
+    admin_tenant_name: service
+    admin_user: glance
+    admin_password: {{ glance_pass|yaml_encode }}
+    revocation_cache_time: 10
+  api_paste_deploy:
+    flavor: keystone
+
+  registry_DEFAULT:
+    rabbit_password: {{ rabbit_pass|yaml_encode }}
+    notification_driver: noop
+    verbose: True
+  registry_database:
+    connection: {{ 'mysql://glance:%s@localhost/glance'|format(glance_dbpass)|yaml_encode }}
+    sqlite_db: ~
+  registry_keystone_authtoken:
+    auth_uri: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
+    identity_uri: {{ 'http://%s:35357'|format(controller)|yaml_encode }}
+    admin_tenant_name: service
+    admin_user: glance
+    admin_password: {{ glance_pass|yaml_encode }}
+  registry_paste_deploy:
+    flavor: keystone
+
+nova:
+  conductor:
     DEFAULT:
-      admin_token: {{ keystone_token|yaml_encode }}
+      rpc_backend: rabbit
+      rabbit_host: localhost
+      rabbit_password: {{ rabbit_pass|yaml_encode }}
+      auth_strategy: keystone
+      my_ip: {{ controller_ipv4|yaml_encode }}
+      vncserver_listen: {{ controller_ipv4|yaml_encode }}
+      vncserver_proxyclient_address: {{ controller_ipv4|yaml_encode }}
+      verbose: True
     database:
-      connection: {{ 'mysql://keystone:%s@localhost/keystone'|format(keystone_dbpass)|yaml_encode }}
-    token:
-      provider: keystone.token.providers.uuid.Provider
-      driver: keystone.token.persistence.backends.sql.Token
-    revoke:
-      driver: keystone.contrib.revoke.backends.sql.Revoke
-
-    ## use the connection profile specified in the `devstack` pillar;
-    ## if not specified and if no connection args provided inline,
-    ## will use the salt-minion configuration
-    profile: devstack
-    tenants:
-      - admin                   # short version, name only
-      - name: demo              # long version, arguments to keystone.tenant_present
-        description: Demo Tenant
-        ## specify connection args inline, overrides Pillar or
-        ## salt-minion connection args
-        keystone.token: {{ keystone_token|yaml_encode }}
-        keystone.endpoint: 'http://127.0.0.1:35357/v2.0'
-      - name: service
-        description: Service Tenant
-        ## alternative connection args
-        keystone.user: admin
-        keystone.password: verybadpass
-        keystone.tenant: admin
-        keystone.tenant_id: f80919baedab48ec8931f200c65a50df
-        keystone.auth_url: 'http://127.0.0.1:5000/v2.0/'
-    roles:
-      ## short version
-      - _member_                # required if adding roles!
-      ## long version, as above
-      - name: admin
-        keystone.token: {{ keystone_token|yaml_encode }}
-        keystone.endpoint: 'http://127.0.0.1:35357/v2.0'
-    users:
-      - name: admin
-        password: 'verybadpass'
-        email: admin@example.com
-        tenant: admin
-        roles:                  # optional; see keystone.user_present
-          admin:                # tenant
-            - admin             # role
-            - _member_          # must be specified?
-      - name: demo
-        password: 'verybasspad'
-        email: demo@example.com
-        tenant: demo            # should be added to _member_ automatically
-      - name: glance
-        password: {{ glance_pass|yaml_encode }}
-        email: ''
-        tenant: service
-        role:
-          - service:
-              - admin
-              - _member_        # must be specified?
-      - name: nova
-        password: {{ nova_pass|yaml_encode }}
-        email: ''
-        tenant: service
-        role:
-          - service:
-              - admin
-              - _member_        # must be specified?
-    service_catalog:
-      - name: keystone
-        service_type: identity
-        description: OpenStack Identity
-      - name: glance
-        service_type: image
-        description: OpenStack Image Service
-      - name: nova
-        service_type: compute
-        description: OpenStack Compute
-    endpoints:
-      - name: keystone
-        publicurl: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
-        internalurl: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
-        adminurl: {{ 'http://%s:35357/v2.0'|format(controller)|yaml_encode }}
-        region: regionOne
-      - name: glance
-        publicurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
-        internalurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
-        adminurl: {{ 'http://%s:9292'|format(controller)|yaml_encode }}
-        region: regionOne
-      - name: nova
-        publicurl: {{ 'http://%s:8774/v2/%%(tenant_id)s'|format(controller)|yaml_encode }}
-        internalurl: {{ 'http://%s:8774/v2/%%(tenant_id)s'|format(controller)|yaml_encode }}
-        adminurl: {{ 'http://%s:8774/v2/%%(tenant_id)s'|format(controller)|yaml_encode }}
-        region: regionOne
-
-  glance:
-    api_DEFAULT:
-      rabbit_password: {{ rabbit_pass|yaml_encode }}
-      notification_driver: noop
-      verbose: True
-    api_database:
-      connection: {{ 'mysql://glance:%s@localhost/glance'|format(glance_dbpass)|yaml_encode }}
-      sqlite_db: ~              # remove the sqlite database setting
-    api_keystone_authtoken:
+      connection: {{ 'mysql://nova:%s@localhost/nova'|format(nova_dbpass)|yaml_encode }}
+    keystone_authtoken:
       auth_uri: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
       identity_uri: {{ 'http://%s:35357'|format(controller)|yaml_encode }}
       admin_tenant_name: service
-      admin_user: glance
-      admin_password: {{ glance_pass|yaml_encode }}
-      revocation_cache_time: 10
-    api_paste_deploy:
-      flavor: keystone
-
-    registry_DEFAULT:
-      rabbit_password: {{ rabbit_pass|yaml_encode }}
-      notification_driver: noop
-      verbose: True
-    registry_database:
-      connection: {{ 'mysql://glance:%s@localhost/glance'|format(glance_dbpass)|yaml_encode }}
-      sqlite_db: ~
-    registry_keystone_authtoken:
-      auth_uri: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
-      identity_uri: {{ 'http://%s:35357'|format(controller)|yaml_encode }}
-      admin_tenant_name: service
-      admin_user: glance
-      admin_password: {{ glance_pass|yaml_encode }}
-    registry_paste_deploy:
-      flavor: keystone
-
-  nova:
-    controller:
-      DEFAULT:
-        rpc_backend: rabbit
-        rabbit_host: localhost
-        rabbit_password: {{ rabbit_pass|yaml_encode }}
-        auth_strategy: keystone
-        my_ip: {{ controller_ipv4|yaml_encode }}
-        vncserver_listen: {{ controller_ipv4|yaml_encode }}
-        vncserver_proxyclient_address: {{ controller_ipv4|yaml_encode }}
-        verbose: True
-      database:
-        connection: {{ 'mysql://nova:%s@localhost/nova'|format(nova_dbpass)|yaml_encode }}
-      keystone_authtoken:
-        auth_uri: {{ 'http://%s:5000/v2.0'|format(controller)|yaml_encode }}
-        identity_uri: {{ 'http://%s:35357'|format(controller)|yaml_encode }}
-        admin_tenant_name: service
-        admin_user: nova
-        admin_password: {{ nova_pass|yaml_encode }}
-      glance:
-        host: {{ controller|yaml_encode }}
+      admin_user: nova
+      admin_password: {{ nova_pass|yaml_encode }}
+    glance:
+      host: {{ controller|yaml_encode }}
 
 ### Local Variables:
 ### mode: yaml

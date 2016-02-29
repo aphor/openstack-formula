@@ -1,2 +1,0 @@
-{%- from "openstack/nova/controller/map.jinja" import nova_controller_settings with context -%}
-{{ nova_controller_settings.policy|json }}

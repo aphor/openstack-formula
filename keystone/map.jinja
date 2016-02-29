@@ -1,0 +1,17 @@
+{% import_yaml "openstack/release.jinja" as openstack_release %}
+{% import_yaml "keystone/defaults.yaml" as default_settings %}
+
+{% set distro_map = salt['grains.filter_by']({
+    'Debian': { 'packages': [ 'keystone', 'python-keystoneclient',
+                              'moreutils', ],
+                'services': [ 'keystone', ],
+                'extra_headers': {
+                  'Distribution': salt['grains.get']('os'), }, },
+    'RedHat': {},
+    'Suse':   {},
+  }) %}
+
+{% do default_settings.keystone.update(distro_map) %}
+
+{% set keystone_settings = salt['pillar.get']('keystone',
+    default=default_settings.keystone, merge=True) %}

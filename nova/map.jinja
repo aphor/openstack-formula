@@ -1,0 +1,15 @@
+{% import_yaml "openstack/release.jinja" as openstack_release %}
+{% import_yaml "nova/defaults.yaml" as default_settings %}
+
+{% set distro_map = salt['grains.filter_by']({
+    'Debian': { 'packages': [ 'nova-compute', 'sysfsutils', ],
+                'services': [ 'nova-compute', ], },
+    'RedHat': {},
+    'Suse':   { 'packages': [ 'openstack-nova-compute', 'genisoimage',
+                              'kvm', ] },
+  }) %}
+
+{% do default_settings.nova.update(distro_map) %}
+
+{% set nova_compute_settings = salt['pillar.get']('nova',
+    default=default_settings.nova, merge=True) %}

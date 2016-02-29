@@ -1,0 +1,2 @@
+{%- from "nova/conductor/map.jinja" import nova_conductor_settings with context -%}
+{{ nova_conductor_settings.policy|json }}

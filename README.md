@@ -38,38 +38,34 @@ computing software platform.
   Activates the OpenStack-specific package repositories on SUSE
   Enterprise Linux, Red Hat Enterprise Linux, or Ubuntu.
 
-* **openstack.keystone**
+* **keystone**
 
   Installs and configures the OpenStack Identity service; provisions
   tenants, roles, and users; and registers other OpenStack services
   and their API endpoints in the service catalog.
 
-* **openstack.glance**
+* **glance**
 
   Installs and configures the OpenStack Image service, including the
   API endpoint and store drivers.
 
-* **openstack.nova.controller**
+* **nova.conductor**
 
-  Deploys an OpenStack Compute controller node.
+  Installs and configures an OpenStack Compute Controller node.
 
-* **openstack.nova.compute**
+* **nova**
 
-  Deploys an OpenStack Compute hypervisor node.
+  Installs and configures an OpenStack Compute node.
 
-* **openstack.nova.network**
+* **nova.network**
 
-* **openstack.nova**
-
-  Installs and configures both the OpenStack Compute controller and
-  hypervisor services on the same node, in that order (not recommended
-  for use in production environments).
+  Installs and configures legacy networking for Compute nodes.
 
 ### Removing OpenStack
 
 Each state listed above has a cooresponding `.absent` state that
 undoes the corresponding set of changes.  For example, to remove the
-OpenStack Identity service, use the `openstack.keystone.absent` state.
+OpenStack Identity service, use the `keystone.absent` state.
 
 ## Configuration
 
