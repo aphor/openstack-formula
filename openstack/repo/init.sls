@@ -26,7 +26,14 @@ openstack_repo:
     {% if openstack_repo_settings.url %}
     - baseurl: {{ openstack_repo_settings.url }}
     {% else %}
-    - baseurl: {{ openstack_repo_settings.url_prefix }}/openstack-{{ openstack_release }}/%DIST%-%RELEASEVER%/
+      {# emulates logic of the rdo-release post-install script #}
+      {% if salt['grains.get']('os') == 'Fedora' %}
+        {% set dist = 'fedora' %}
+      {% else %}
+        {% set dist = 'epel' %}
+      {% endif %}
+      {% set releasever = salt['grains.get']('osmajorrelease') %}
+    - baseurl: {{ openstack_repo_settings.url_prefix }}/openstack-{{ openstack_release }}/{{ dist }}-{{ releasever }}/
     {% endif %}
     - gpgcheck: 1
     - gpgfile: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-{{ openstack_release|title }}
