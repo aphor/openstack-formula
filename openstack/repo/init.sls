@@ -20,6 +20,10 @@ openstack_repo:
   file.managed:
     - name: /etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-{{ openstack_release|title }}
     - source: salt://openstack/repo/files/RPM-GPG-KEY-RDO-{{ openstack_release|title }}
+  cmd.wait:
+    - name: rpm -import /etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-{{ openstack_release|title }}
+    - watch:
+        - file: openstack_repo
   pkgrepo.managed:
     - name: rdo-release
     - humanname: OpenStack {{ openstack_release|title }} Repository
@@ -39,7 +43,7 @@ openstack_repo:
     - gpgfile: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-{{ openstack_release|title }}
     - require:
         - pkg: openstack_repo
-        - file: openstack_repo
+        - cmd: openstack_repo
 
   {% elif salt['grains.get']('os_family') == 'Suse' %}
   module.run:
