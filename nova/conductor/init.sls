@@ -1,7 +1,7 @@
 {% from "openstack/release.jinja" import openstack_release with context %}
 {% from "nova/conductor/map.jinja" import nova_conductor_settings with context %}
 
-openstack_nova_conductor:
+openstack_compute_conductor:
   pkg.installed:
     - pkgs: {{ nova_conductor_settings.packages|yaml }}
 
@@ -9,7 +9,7 @@ openstack_nova_conductor:
     - name: {{ nova_conductor_settings.group }}
     - system: True
     - require:
-        - pkg: openstack_nova_conductor
+        - pkg: openstack_compute_conductor
 
   user.present:
     - name: {{ nova_conductor_settings.user }}
@@ -19,8 +19,8 @@ openstack_nova_conductor:
     - password: '*'
     - shell: /bin/false
     - require:
-        - pkg: openstack_nova_conductor
-        - group: openstack_nova_conductor
+        - pkg: openstack_compute_conductor
+        - group: openstack_compute_conductor
 
   file.recurse:
     - name: {{ nova_conductor_settings.config_directory }}
@@ -31,22 +31,22 @@ openstack_nova_conductor:
     - dir_mode: 751
     - file_mode: 640
     - require:
-        - pkg: openstack_nova_conductor
-        - group: openstack_nova_conductor
+        - pkg: openstack_compute_conductor
+        - group: openstack_compute_conductor
 
   cmd.wait:
     - name: nova-manage db sync
     - user: {{ nova_conductor_settings.user }}
     - watch:
-        - pkg: openstack_nova_conductor
-        - file: openstack_nova_conductor
+        - pkg: openstack_compute_conductor
+        - file: openstack_compute_conductor
 
   service.running:
     - names: {{ nova_conductor_settings.services|yaml }}
     - enable: True
     - watch:
-        - pkg: openstack_nova_conductor
-        - group: openstack_nova_conductor
-        - user: openstack_nova_conductor
-        - file: openstack_nova_conductor
-        - cmd: openstack_nova_conductor
+        - pkg: openstack_compute_conductor
+        - group: openstack_compute_conductor
+        - user: openstack_compute_conductor
+        - file: openstack_compute_conductor
+        - cmd: openstack_compute_conductor

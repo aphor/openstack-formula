@@ -1,7 +1,7 @@
 {% from "openstack/release.jinja" import openstack_release with context %}
 {% from "nova/map.jinja" import nova_compute_settings with context %}
 
-openstack_nova_compute:
+openstack_compute:
   pkg.installed:
     - pkgs: {{ nova_compute_settings.packages|yaml }}
 
@@ -9,7 +9,7 @@ openstack_nova_compute:
     - name: {{ nova_compute_settings.group }}
     - system: True
     - require:
-        - pkg: openstack_nova_compute
+        - pkg: openstack_compute
 
   user.present:
     - name: {{ nova_compute_settings.user }}
@@ -19,8 +19,8 @@ openstack_nova_compute:
     - password: '*'
     - shell: /bin/false
     - require:
-        - pkg: openstack_nova_compute
-        - group: openstack_nova_compute
+        - pkg: openstack_compute
+        - group: openstack_compute
 
   file.recurse:
     - name: {{ nova_compute_settings.config_directory }}
@@ -31,6 +31,6 @@ openstack_nova_compute:
     - dir_mode: 751
     - file_mode: 640
     - require:
-        - pkg: openstack_nova_compute
-        - group: openstack_nova_compute
-        - user: openstack_nova_compute
+        - pkg: openstack_compute
+        - group: openstack_compute
+        - user: openstack_compute

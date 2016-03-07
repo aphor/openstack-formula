@@ -1,7 +1,7 @@
 {% from "openstack/release.jinja" import openstack_release with context %}
 {% from "keystone/map.jinja" import keystone_settings with context %}
 
-openstack_keystone:
+openstack_identity:
   pkg.installed:
     - pkgs: {{ keystone_settings.packages|yaml }}
 
@@ -9,7 +9,7 @@ openstack_keystone:
     - name: {{ keystone_settings.group }}
     - system: True
     - require:
-        - pkg: openstack_keystone
+        - pkg: openstack_identity
 
   user.present:
     - name: {{ keystone_settings.user }}
@@ -19,8 +19,8 @@ openstack_keystone:
     - password: '*'
     - shell: /bin/false
     - require:
-        - pkg: openstack_keystone
-        - group: openstack_keystone
+        - pkg: openstack_identity
+        - group: openstack_identity
 
   file.recurse:
     - name: {{ keystone_settings.config_directory }}
@@ -31,36 +31,36 @@ openstack_keystone:
     - dir_mode: 751
     - file_mode: 640
     - require:
-        - pkg: openstack_keystone
-        - group: openstack_keystone
-        - user: openstack_keystone
+        - pkg: openstack_identity
+        - group: openstack_identity
+        - user: openstack_identity
 
   cmd.wait:
     - name: keystone-manage db_sync
     - user: {{ keystone_settings.user }}
     - watch:
-        - pkg: openstack_keystone
-        - group: openstack_keystone
-        - user: openstack_keystone
-        - file: openstack_keystone
+        - pkg: openstack_identity
+        - group: openstack_identity
+        - user: openstack_identity
+        - file: openstack_identity
 
   service.running:
     - names: {{ keystone_settings.services|yaml }}
     - enable: True
     - watch:
-        - pkg: openstack_keystone
-        - group: openstack_keystone
-        - user: openstack_keystone
-        - file: openstack_keystone
-        - cmd: openstack_keystone
+        - pkg: openstack_identity
+        - group: openstack_identity
+        - user: openstack_identity
+        - file: openstack_identity
+        - cmd: openstack_identity
 
   cron.present:
     - name: chronic keystone-manage token_flush
     - user: {{ keystone_settings.user }}
     - minute: random
     - require:
-        - user: openstack_keystone
-        - service: openstack_keystone
+        - user: openstack_identity
+        - service: openstack_identity
 
 {% set keystone_connection_args = [
     'keystone.user',
@@ -73,7 +73,7 @@ openstack_keystone:
   ] %}
 
 {% for tenant in keystone_settings.tenants %}
-{{ 'openstack_keystone_tenant_%s'|format(tenant.name if tenant is mapping else tenant)|yaml_encode }}:
+{{ 'openstack_identity_tenant_%s'|format(tenant.name if tenant is mapping else tenant)|yaml_encode }}:
   keystone.tenant_present:
   {% if tenant is mapping %}
     - name: {{ tenant.name|yaml_encode }}
@@ -99,11 +99,11 @@ openstack_keystone:
     {% endif %}
   {% endif %}
     - require:
-        - service: openstack_keystone
+        - service: openstack_identity
 {% endfor %}
 
 {% for role in keystone_settings.roles %}
-{{ 'openstack_keystone_role_%s'|format(role.name if role is mapping else role)|yaml_encode }}:
+{{ 'openstack_identity_role_%s'|format(role.name if role is mapping else role)|yaml_encode }}:
   keystone.role_present:
   {% if role is mapping %}
     - name: {{ role.name|yaml_encode }}
@@ -123,7 +123,7 @@ openstack_keystone:
     {% endif %}
   {% endif %}
     - require:
-        - service: openstack_keystone
+        - service: openstack_identity
 {% endfor %}
 
 {% for user in keystone_settings.users %}
@@ -131,7 +131,7 @@ openstack_keystone:
    # worry about duplicate entries. #}
   {% set required_tenants = {} %}
   {% set required_roles = {} %}
-{{ 'openstack_keystone_user_%s'|format(user.name)|yaml_encode }}:
+{{ 'openstack_identity_user_%s'|format(user.name)|yaml_encode }}:
   keystone.user_present:
     - name: {{ user.name|yaml_encode }}
     - password: {{ user.password|yaml_encode }}
@@ -163,17 +163,17 @@ openstack_keystone:
       {% endif %}
     {% endfor %}
     - require:
-        - service: openstack_keystone
+        - service: openstack_identity
     {% for tenant, ignored_value in required_tenants|dictsort %}
-        - keystone: {{ 'openstack_keystone_tenant_%s'|format(tenant)|yaml_encode }}
+        - keystone: {{ 'openstack_identity_tenant_%s'|format(tenant)|yaml_encode }}
     {% endfor %}
     {% for role, ignored_value in required_roles|dictsort %}
-        - keystone: {{ 'openstack_keystone_role_%s'|format(role)|yaml_encode }}
+        - keystone: {{ 'openstack_identity_role_%s'|format(role)|yaml_encode }}
     {% endfor %}
 {% endfor %}
 
 {% for service in keystone_settings.service_catalog %}
-{{ 'openstack_keystone_service_%s'|format(service.name)|yaml_encode }}:
+{{ 'openstack_identity_service_%s'|format(service.name)|yaml_encode }}:
   keystone.service_present:
     - name: {{ service.name|yaml_encode }}
     - service_type: {{ service.service_type|yaml_encode }}
@@ -192,7 +192,7 @@ openstack_keystone:
 {% endfor %}
 
 {% for endpoint in keystone_settings.endpoints %}
-{{ 'openstack_keystone_endpoint_%s'|format(endpoint.name)|yaml_encode }}:
+{{ 'openstack_identity_endpoint_%s'|format(endpoint.name)|yaml_encode }}:
   keystone.endpoint_present:
     - name: {{ endpoint.name|yaml_encode }}
   {% if endpoint.publicurl is defined %}
