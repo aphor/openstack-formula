@@ -11,5 +11,5 @@
 
 {% do default_settings.nova.update(distro_map) %}
 
-{% set nova_compute_settings = salt['pillar.get']('nova',
+{% set nova_settings = salt['pillar.get']('nova',
     default=default_settings.nova, merge=True) %}
