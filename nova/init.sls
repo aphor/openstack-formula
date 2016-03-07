@@ -24,7 +24,7 @@ openstack_compute:
 
   file.recurse:
     - name: {{ nova_settings.config_directory }}
-    - source: salt://nova/compute/files/{{ openstack_release }}/
+    - source: salt://nova/files/{{ openstack_release }}/
     - template: jinja
     - user: root
     - group: {{ nova_settings.group }}
