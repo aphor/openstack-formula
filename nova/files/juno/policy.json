@@ -1,0 +1,2 @@
+{%- from "nova/map.jinja" import nova_settings with context -%}
+{{ nova_settings.policy|json }}
