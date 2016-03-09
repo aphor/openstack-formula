@@ -25,7 +25,8 @@ nova:
       - openstack-nova-novncproxy
 
     DEFAULT:
-      {}
+      network_api_class: nova.network.api.API
+      security_group_api: nova
     api_database:
       {}
     barbican:
