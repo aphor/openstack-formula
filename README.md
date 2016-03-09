@@ -26,6 +26,11 @@ computing software platform.
   information about its services.  Typically, the controller node
   hosts this database.  OpenStack supports both MySQL and PostgreSQL.
 
+* [mongodb-formula](https://github.com/saltstack-formulas/mongodb-formula)
+
+  OpenStack Telemetry uses MongoDB to record metering data pertaining
+  to the Compute, Image, Block Storage, and Object Storage services.
+
 * [rabbitmq-formula](https://github.com/saltstack-formulas/rabbitmq-formula)
 
   OpenStack components communicate with one another using a message
