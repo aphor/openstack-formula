@@ -234,8 +234,10 @@ nova:
       rabbit_password: {{ rabbit_pass|yaml_encode }}
       auth_strategy: keystone
       my_ip: {{ controller_ipv4|yaml_encode }}
-      vncserver_listen: {{ controller_ipv4|yaml_encode }}
+      vnc_enabled: True
+      vncserver_listen: 0.0.0.0
       vncserver_proxyclient_address: {{ controller_ipv4|yaml_encode }}
+      novncproxy_base_url: {{ 'http://%s:6080/vnc_auto.html'|format(controller)|yaml_encode }}
       verbose: True
     database:
       connection: {{ 'mysql://nova:%s@localhost/nova'|format(nova_dbpass)|yaml_encode }}
@@ -247,6 +249,12 @@ nova:
       admin_password: {{ nova_pass|yaml_encode }}
     glance:
       host: {{ controller|yaml_encode }}
+    {% set cpu_flags = salt['grains.get']('cpu_flags') %}
+    {% set hw_accel = 'vmx' in cpu_flags or 'svm' in cpu_flags %}
+    {% if not hw_accel %}
+    libvirt:
+      virt_type: qemu
+    {% endif %}
 
 ### Local Variables:
 ### mode: yaml
