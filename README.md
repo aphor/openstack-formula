@@ -82,9 +82,9 @@ computing software platform.
 
 ### Removing OpenStack
 
-Each state listed above has a cooresponding `.absent` state that
-undoes the corresponding set of changes.  For example, to remove the
-OpenStack Identity service, use the `keystone.absent` state.
+Each state listed above has a `.absent` state that undoes the
+corresponding set of changes.  For example, to remove the OpenStack
+Identity service, use the `keystone.absent` state.
 
 ## Configuration
 
