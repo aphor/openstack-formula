@@ -23,22 +23,14 @@ nova:
       - openstack-nova-scheduler
       - openstack-nova-conductor
       - openstack-nova-novncproxy
-  
+
     DEFAULT:
-      dhcpbridge_flagfile: /etc/nova/nova.conf
-      dhcpbridge: /usr/bin/nova-dhcpbridge
-      logdir: /var/log/nova
-      state_path: /var/lib/nova
-      lock_path: /var/lock/nova
-      force_dhcp_release: True
-      libvirt_use_virtio_for_bridges: True
-      verbose: True
-      ec2_private_dns_show_ip: True
-      api_paste_config: /etc/nova/api-paste.ini
-      enabled_apis: ec2,osapi_compute,metadata
+      {}
     api_database:
       {}
     barbican:
+      {}
+    baremetal:
       {}
     cells:
       {}
@@ -71,6 +63,8 @@ nova:
     libvirt:
       {}
     matchmaker_redis:
+      {}
+    matchmaker_ring:
       {}
     metrics:
       {}
@@ -108,106 +102,106 @@ nova:
       {}
     zookeeper:
       {}
-  
+
     rootwrap_DEFAULT:
       filters_path: /etc/nova/rootwrap.d,/usr/share/nova/rootwrap
       exec_dirs: /sbin,/usr/sbin,/bin,/usr/bin
       use_syslog: False
       syslog_log_facility: syslog
       syslog_log_level: ERROR
-  
+
     loggers:
       - root
       - nova
-  
+
     handlers:
       - stderr
       - stdout
       - watchedfile
       - syslog
       - 'null'
-  
+
     formatters:
       - context
       - default
-  
+
     logger_root:
      level: WARNING
      handlers: 'null'
-  
+
     logger_nova:
      level: INFO
      handlers: stderr
      qualname: nova
-  
+
     logger_amqp:
      level: WARNING
      handlers: stderr
      qualname: amqp
-  
+
     logger_amqplib:
      level: WARNING
      handlers: stderr
      qualname: amqplib
-  
+
     logger_sqlalchemy:
      level: WARNING
      handlers: stderr
      qualname: sqlalchemy
-  
+
     logger_boto:
      level: WARNING
      handlers: stderr
      qualname: boto
-  
+
     logger_suds:
      level: INFO
      handlers: stderr
      qualname: suds
-  
+
     logger_eventletwsgi:
      level: WARNING
      handlers: stderr
      qualname: eventlet.wsgi.server
-  
+
     handler_stderr:
      class: StreamHandler
      args: (sys.stderr,)
      formatter: context
-  
+
     handler_stdout:
      class: StreamHandler
      args: (sys.stdout,)
      formatter: context
-  
+
     handler_watchedfile:
      class: handlers.WatchedFileHandler
      args: ('nova.log',)
      formatter: context
-  
+
     handler_syslog:
      class: handlers.SysLogHandler
      args: "('/dev/log', handlers.SysLogHandler.LOG_USER)"
      formatter: context
-  
+
     handler_null:
      class: logging.NullHandler
      formatter: default
      args: '()'
-  
+
     formatter_context:
      class: nova.openstack.common.log.ContextFormatter
-  
+
     formatter_default:
      format: '%(message)s'
-  
+
     policy:
       context_is_admin: "role:admin"
       admin_or_owner: "is_admin:True or project_id:%(project_id)s"
       default: "rule:admin_or_owner"
-  
+
       cells_scheduler_filter:TargetCellFilter: "is_admin:True"
-  
+
       compute:create: ""
       compute:create:attach_network: ""
       compute:create:attach_volume: ""
@@ -217,7 +211,7 @@ nova:
       compute:start: "rule:admin_or_owner"
       compute:stop: "rule:admin_or_owner"
       compute:unlock_override: "rule:admin_api"
-  
+
       compute:shelve: ""
       compute:shelve_offload: ""
       compute:unshelve: ""
@@ -226,10 +220,10 @@ nova:
       compute:revert_resize: ""
       compute:rebuild: ""
       compute:reboot: ""
-  
+
       compute:volume_snapshot_create: ""
       compute:volume_snapshot_delete: ""
-  
+
       admin_api: "is_admin:True"
       compute_extension:accounts: "rule:admin_api"
       compute_extension:admin_actions: "rule:admin_api"
@@ -341,7 +335,7 @@ nova:
       compute_extension:os-assisted-volume-snapshots:delete: "rule:admin_api"
       compute_extension:console_auth_tokens: "rule:admin_api"
       compute_extension:os-server-external-events:create: "rule:admin_api"
-  
+
       network:get_all: ""
       network:get: ""
       network:create: ""
@@ -356,7 +350,7 @@ nova:
       network:get_instance_id_by_floating_address: ""
       network:setup_networks_on_host: ""
       network:get_backdoor_port: ""
-  
+
       network:get_floating_ip: ""
       network:get_floating_ip_pools: ""
       network:get_floating_ip_by_address: ""
@@ -368,14 +362,14 @@ nova:
       network:release_floating_ip: ""
       network:migrate_instance_start: ""
       network:migrate_instance_finish: ""
-  
+
       network:get_fixed_ip: ""
       network:get_fixed_ip_by_address: ""
       network:add_fixed_ip_to_instance: ""
       network:remove_fixed_ip_from_instance: ""
       network:add_network_to_project: ""
       network:get_instance_nw_info: ""
-  
+
       network:get_dns_domains: ""
       network:add_dns_entry: ""
       network:modify_dns_entry: ""
@@ -386,7 +380,7 @@ nova:
       network:create_public_dns_domain: ""
       network:delete_dns_domain: ""
       network:attach_external_network: "rule:admin_api"
-  
+
       os_compute_api:servers:start: "rule:admin_or_owner"
       os_compute_api:servers:stop: "rule:admin_or_owner"
       os_compute_api:os-access-ips:discoverable: ""
@@ -593,4 +587,3 @@ nova:
       os_compute_api:os-assisted-volume-snapshots:discoverable: ""
       os_compute_api:os-console-auth-tokens: "rule:admin_api"
       os_compute_api:os-server-external-events:create: "rule:admin_api"
-  
