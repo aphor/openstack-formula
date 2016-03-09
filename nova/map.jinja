@@ -2,8 +2,10 @@
 {% import_yaml "nova/defaults.yaml" as default_settings %}
 
 {% set distro_map = salt['grains.filter_by']({
-    'Debian': { 'packages': [ 'nova-compute', 'sysfsutils', ],
-                'services': [ 'nova-compute', ], },
+    'Debian': { 'packages': [ 'nova-api-metadata', 'nova-compute',
+                              'nova-network', 'sysfsutils', ],
+                'services': [ 'nova-api-metadata', 'nova-compute',
+                              'nova-network', ], },
     'RedHat': {},
     'Suse':   { 'packages': [ 'openstack-nova-compute', 'genisoimage',
                               'kvm', ] },

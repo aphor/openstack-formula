@@ -1,6 +1,8 @@
 nova:
   packages:
+    - openstack-nova-api
     - openstack-nova-compute
+    - openstack-nova-network
     - sysfsutils
   group:
     nova
@@ -15,7 +17,8 @@ nova:
     - libvirtd
 
   DEFAULT:
-    {}
+    network_api_class: nova.network.api.API
+    security_group_api: nova
   api_database:
     {}
   barbican:
