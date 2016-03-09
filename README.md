@@ -6,6 +6,11 @@ computing software platform.
 
 ## Required Formulas
 
+* [ntp-formula](https://github.com/saltstack-formulas/ntp-formula)
+
+  Servers participating in an OpenStack deployment should have their
+  clocks synchronized using the Network Time Protocol (NTP).
+
 * [epel-formula](https://github.com/saltstack-formulas/epel-formula)
 
   When deploying OpenStack on computers running Red Hat Enterprise
@@ -78,6 +83,20 @@ computing software platform.
   Installs and configures OpenStack Neutron for Compute nodes.  One
   must also override the configuration of the `nova.conductor` and
   `nova` states, which use legacy networking by default.
+
+* **horizon**
+
+* **cinder**
+
+* **cinder.volume**
+
+* **swift.proxy**
+
+* **swift**
+
+* **heat**
+
+* **ceilometer**
 
 ### Removing OpenStack
 
