@@ -51,15 +51,33 @@ computing software platform.
 
 * **nova.conductor**
 
-  Installs and configures an OpenStack Compute Controller node.
+  Installs and configures an OpenStack Compute Controller node.  Note
+  that this defaults to legacy networking.
 
 * **nova**
 
-  Installs and configures an OpenStack Compute node.
+  Installs and configures an OpenStack Compute node.  Note that this
+  defaults to legacy networking.
+
+* **neutron.server**
+
+  Installs and configures an OpenStack Networking Controller node;
+  manages both the virtual networking infrastructure (VNI) and
+  physical networking infrastructure (PNI); and provisions network
+  toplogies including firewalls, load balancers, and virtual private
+  networks (VPNs).
+
+* **neutron**
+
+  Installs and configures an OpenStack Networking Network node, which
+  handles internal and external routing and DHCP services for virtual
+  networks.
 
 * **nova.network**
 
-  Installs and configures legacy networking for Compute nodes.
+  Installs and configures OpenStack Neutron for Compute nodes.  One
+  must also override the configuration of the `nova.conductor` and
+  `nova` states, which use legacy networking by default.
 
 ### Removing OpenStack
 
