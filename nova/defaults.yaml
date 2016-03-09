@@ -16,6 +16,174 @@ nova:
 
   DEFAULT:
     {}
+    api_database:
+      {}
+    barbican:
+      {}
+    baremetal:
+      {}
+    cells:
+      {}
+    cinder:
+      {}
+    conductor:
+      {}
+    cors:
+      {}
+    cors.subdomain:
+      {}
+    database:
+      {}
+    ephemeral_storage_encryption:
+      {}
+    glance:
+      {}
+    guestfs:
+      {}
+    hyperv:
+      {}
+    image_file_url:
+      {}
+    ironic:
+      {}
+    keymgr:
+      {}
+    keystone_authtoken:
+      {}
+    libvirt:
+      {}
+    matchmaker_redis:
+      {}
+    matchmaker_ring:
+      {}
+    metrics:
+      {}
+    neutron:
+      {}
+    osapi_v21:
+      {}
+    oslo_concurrency:
+      {}
+    oslo_messaging_aqmp:
+      {}
+    oslo_messaging_qpid:
+      {}
+    oslo_messaging_rabbit:
+      {}
+    oslo_middleware:
+      {}
+    rdp:
+      {}
+    serial_console:
+      {}
+    spice:
+      {}
+    ssl:
+      {}
+    trusted_computing:
+      {}
+    upgrade_levels:
+      {}
+    vmware:
+      {}
+    workarounds:
+      {}
+    xenserver:
+      {}
+    zookeeper:
+      {}
+
+  rootwrap_DEFAULT:
+    filters_path: /etc/nova/rootwrap.d,/usr/share/nova/rootwrap
+    exec_dirs: /sbin,/usr/sbin,/bin,/usr/bin
+    use_syslog: False
+    syslog_log_facility: syslog
+    syslog_log_level: ERROR
+
+  loggers:
+    - root
+    - nova
+
+  handlers:
+    - stderr
+    - stdout
+    - watchedfile
+    - syslog
+    - 'null'
+
+  formatters:
+    - context
+    - default
+
+  logger_root:
+   level: WARNING
+   handlers: 'null'
+
+  logger_nova:
+   level: INFO
+   handlers: stderr
+   qualname: nova
+
+  logger_amqp:
+   level: WARNING
+   handlers: stderr
+   qualname: amqp
+
+  logger_amqplib:
+   level: WARNING
+   handlers: stderr
+   qualname: amqplib
+
+  logger_sqlalchemy:
+   level: WARNING
+   handlers: stderr
+   qualname: sqlalchemy
+
+  logger_boto:
+   level: WARNING
+   handlers: stderr
+   qualname: boto
+
+  logger_suds:
+   level: INFO
+   handlers: stderr
+   qualname: suds
+
+  logger_eventletwsgi:
+   level: WARNING
+   handlers: stderr
+   qualname: eventlet.wsgi.server
+
+  handler_stderr:
+   class: StreamHandler
+   args: (sys.stderr,)
+   formatter: context
+
+  handler_stdout:
+   class: StreamHandler
+   args: (sys.stdout,)
+   formatter: context
+
+  handler_watchedfile:
+   class: handlers.WatchedFileHandler
+   args: ('nova.log',)
+   formatter: context
+
+  handler_syslog:
+   class: handlers.SysLogHandler
+   args: "('/dev/log', handlers.SysLogHandler.LOG_USER)"
+   formatter: context
+
+  handler_null:
+   class: logging.NullHandler
+   formatter: default
+   args: '()'
+
+  formatter_context:
+   class: nova.openstack.common.log.ContextFormatter
+
+  formatter_default:
+   format: '%(message)s'
 
   policy:
     "context_is_admin": "role:admin"
@@ -364,10 +532,3 @@ nova:
     "network:create_public_dns_domain": ""
     "network:delete_dns_domain": ""
     "network:attach_external_network": "rule:admin_api"
-
-  rootwrap_DEFAULT:
-    filters_path: /etc/nova/rootwrap.d,/usr/share/nova/rootwrap
-    exec_dirs: /sbin,/usr/sbin,/bin,/usr/bin
-    use_syslog: False
-    syslog_log_facility: syslog
-    syslog_log_level: ERROR
