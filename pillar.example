@@ -205,8 +205,29 @@ glance:
   registry_paste_deploy:
     flavor: keystone
 
+## override the nova.conductor SLS defaults to include settings needed
+## for the Nova Compute service
 nova:
   conductor:
+    packages:                   # e.g., for RedHat
+      - openstack-nova-api
+      - openstack-nova-cert
+      - openstack-nova-conductor
+      - openstack-nova-console
+      - openstack-nova-novncproxy
+      - openstack-nova-scheduler
+      - python-novaclient
+      - openstack-nova-compute
+      - sysfsutils
+    services:                   # e.g., for RedHat
+      - openstack-nova-api
+      - openstack-nova-cert
+      - openstack-nova-consoleauth
+      - openstack-nova-scheduler
+      - openstack-nova-conductor
+      - openstack-nova-novncproxy
+      - openstack-nova-compute
+      - libvirtd
     DEFAULT:
       rpc_backend: rabbit
       rabbit_host: localhost
